@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Marker-based AR Business Card - Abhi Ram</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Marker-based AR business card of Abhi Ram using A-Frame and MindAR."/>
+
+  <!-- A-Frame + MindAR (FREE CDNs) -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <!-- Optional MindAR UI CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.css"/>
+
+  <!-- Modern font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- AR container -->
+  <div id="ar-container">
+    <!-- Marker-based AR Scene -->
+    <a-scene
+      mindar-image="imageTargetSrc: card.mind;"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+      embedded
+    >
+      <a-assets>
+        <!-- Marker image texture -->
+        <img id="card" src="card.png" alt="AR marker - business card" />
+      </a-assets>
+
+      <!-- MindAR camera -->
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <!-- Entity attached to marker (index 0) -->
+      <a-entity mindar-image-target="targetIndex: 0" id="marker-target">
+        <!-- Plane overlay exactly on top of the marker -->
+        <a-plane
+          src="#card"
+          position="0 0 0"
+          height="0.552"
+          width="1"
+          rotation="0 0 0"
+        ></a-plane>
+
+        <!-- AR overlay text -->
+        <a-text
+          value="Abhi Ram"
+          position="-0.45 0.25 0.05"
+          width="1.8"
+          color="#00ffc8"
+          align="left"
+        ></a-text>
+
+        <a-text
+          value="Computer Science | AI/ML"
+          position="-0.45 0.12 0.05"
+          width="1.8"
+          color="#ffffff"
+          align="left"
+        ></a-text>
+
+        <!-- Floating box -->
+        <a-box
+          position="0 0.1 0.1"
+          depth="0.05"
+          height="0.05"
+          width="0.2"
+          color="#00ffc8"
+          animation="property: position; to: 0 0.18 0.1; dir: alternate; loop: true; dur: 1000"
+        ></a-box>
+
+        <!-- Rotating ring highlight -->
+        <a-ring
+          position="0 -0.25 0.05"
+          radius-inner="0.15"
+          radius-outer="0.18"
+          color="#00ffc8"
+          material="opacity: 0.6"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear"
+        ></a-ring>
+      </a-entity>
+    </a-scene>
+  </div>
+
+  <!-- AR status bubble -->
+  <div id="ar-status">
+    <span id="ar-status-dot"></span>
+    <span id="ar-status-text">Initializing AR...</span>
+  </div>
+
+  <!-- HTML overlay for interactive business card -->
+  <div id="ui-overlay">
+    <div class="card" id="glass-card">
+      <div class="card-header">
+        <div class="name-block">
+          <h1 id="name">Abhi Ram</h1>
+          <p id="title">Computer Science Student · AI/ML & Web Dev</p>
+        </div>
+        <span class="status-pill" id="marker-status-pill">Scanning...</span>
+      </div>
+
+      <p class="hint" id="scan-hint">
+        Point your camera at the printed AR business card to activate.
+      </p>
+
+      <div class="status-text" id="status-text">
+        ✔️ Available for freelance
+      </div>
+
+      <h3>Profile</h3>
+      <ul class="profile-list">
+        <li><strong>Skills:</strong> Python, AI/ML, Web Development, AR</li>
+        <li><strong>Experience:</strong> Academic &amp; mini projects</li>
+        <li><strong>Highlights:</strong> AR business card, hackathons</li>
+      </ul>
+
+      <h3>Quick Actions</h3>
+      <div class="buttons">
+        <button class="btn-chip btn-primary" onclick="saveContact()">Save Contact</button>
+
+        <!-- TODO: replace with your real URLs -->
+        <button class="btn-chip" onclick="openLink('https://github.com/abhiadabala')">
+          GitHub
+        </button>
+        <button class="btn-chip" onclick="openLink('https://www.linkedin.com/in/abhiram-adabala')">
+          LinkedIn
+        </button>
+        <!-- <button class="btn-chip" onclick="openLink('https://your-portfolio-link.com')">
+          Portfolio
+        </button> -->
+        <button class="btn-chip" onclick="openLink('https://wa.me/919640672613')">
+          WhatsApp
+        </button>
+        <!-- <button class="btn-chip" onclick="openLink('resume.pdf')">
+          Download Résumé
+        </button> -->
+      </div>
+
+      <h3>Controls</h3>
+      <div class="controls">
+        <button class="btn-chip" onclick="toggleTheme()">Toggle Theme</button>
+        <button class="btn-chip" onclick="playIntro()">Play Voice Intro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Voice intro -->
+  <audio id="intro-audio" src="intro.mp3"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>

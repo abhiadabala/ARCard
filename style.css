@@ -1,0 +1,335 @@
+
+    :root {
+      --bg-color: #05050a;
+      --text-color: #f5f5f5;
+      --accent-color: #00ffc8;
+      --card-bg: rgba(15, 15, 30, 0.78);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --glass-border: linear-gradient(135deg, rgba(0, 255, 200, 0.8), rgba(56, 189, 248, 0.8));
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #020617 0, #020617 35%, #000 75%);
+      color: var(--text-color);
+      overflow: hidden;
+    }
+
+    /* AR scene container */
+    #ar-container {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 0;
+    }
+
+    a-scene {
+      position: fixed;
+      inset: 0;
+    }
+
+    a-scene canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+
+    /* Small AR status chip (top-left) */
+    #ar-status {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 3;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+      backdrop-filter: blur(12px);
+    }
+
+    #ar-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f59e0b; /* scanning (amber) by default */
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+    }
+
+    /* Overlay container (will be positioned over marker using JS) */
+    #ui-overlay {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.94);
+      width: 92%;
+      max-width: 420px;
+      z-index: 2;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      perspective: 1200px; /* for 3D tilt */
+    }
+
+    #ui-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* GLASS, GLOW, TILT CARD */
+    .card {
+      position: relative;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 16px 20px 14px;
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(22px) saturate(145%);
+      box-shadow:
+        0 18px 45px rgba(15, 23, 42, 0.95),
+        0 0 25px rgba(0, 255, 200, 0.15);
+      transition:
+        transform 0.2s ease-out,
+        box-shadow 0.25s ease,
+        background 0.25s ease,
+        border-color 0.25s ease;
+      transform-style: preserve-3d;
+      overflow: hidden;
+    }
+
+    /* Glassy gradient border glow */
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: radial-gradient(circle at top left,
+          rgba(0, 255, 200, 0.7),
+          transparent 55%)
+        ,
+        radial-gradient(circle at bottom right,
+          rgba(59, 130, 246, 0.7),
+          transparent 55%);
+      mix-blend-mode: screen;
+      opacity: 0.22;
+      pointer-events: none;
+    }
+
+    /* Inner soft highlight */
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        linear-gradient(135deg,
+          rgba(148, 163, 184, 0.15),
+          transparent 40%,
+          rgba(15, 23, 42, 0.7));
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    /* Put content above ::before / ::after */
+    .card > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    .card:hover {
+      box-shadow:
+        0 22px 52px rgba(15, 23, 42, 1),
+        0 0 35px rgba(0, 255, 200, 0.25);
+      border-color: rgba(0, 255, 200, 0.65);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      gap: 12px;
+    }
+
+    .name-block h1 {
+      font-size: 1.45rem;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      background: linear-gradient(120deg, #e5e7eb, #00ffc8, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 16px rgba(0, 255, 200, 0.3);
+    }
+
+    .name-block p {
+      font-size: 0.82rem;
+      opacity: 0.9;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .status-pill {
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0, 255, 200, 0.12);
+      border: 1px solid rgba(0, 255, 200, 0.9);
+      color: var(--accent-color);
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      box-shadow: 0 0 14px rgba(0, 255, 200, 0.3);
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      margin-bottom: 8px;
+    }
+
+    .status-text {
+      margin: 4px 0 10px;
+      font-size: 0.86rem;
+      color: var(--accent-color);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-shadow: 0 0 12px rgba(0, 255, 200, 0.6);
+    }
+
+    h3 {
+      font-size: 0.9rem;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+
+    .profile-list {
+      list-style: none;
+      font-size: 0.84rem;
+      margin-bottom: 8px;
+    }
+
+    .profile-list li {
+      margin: 3px 0;
+      display: flex;
+      gap: 4px;
+    }
+
+    .profile-list strong {
+      opacity: 0.95;
+      min-width: 78px;
+      font-weight: 500;
+    }
+
+    .buttons,
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .btn-chip {
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-color);
+      font-size: 0.8rem;
+      cursor: pointer;
+      outline: none;
+      transition:
+        background 0.2s ease,
+        transform 0.12s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease,
+        letter-spacing 0.1s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      backdrop-filter: blur(18px);
+    }
+
+    .btn-chip:hover {
+      background: rgba(37, 99, 235, 0.98);
+      border-color: rgba(96, 165, 250, 0.9);
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.9);
+      letter-spacing: 0.03em;
+    }
+
+    .btn-primary {
+      background: var(--accent-color);
+      color: #020617;
+      border-color: transparent;
+      font-weight: 500;
+      box-shadow: 0 0 18px rgba(0, 255, 200, 0.45);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.07);
+      box-shadow: 0 0 24px rgba(0, 255, 200, 0.6);
+    }
+
+    /* Light theme */
+    body.light-theme {
+      --bg-color: #f4f4f4;
+      --text-color: #111827;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --border-subtle: rgba(15, 23, 42, 0.08);
+    }
+
+    body.light-theme {
+      background: radial-gradient(circle at top, #e5e7eb 0, #e5e7eb 40%, #cbd5f5 100%);
+    }
+
+    body.light-theme .card {
+      box-shadow:
+        0 14px 35px rgba(148, 163, 184, 0.6),
+        0 0 18px rgba(0, 0, 0, 0.1);
+    }
+
+    body.light-theme .btn-chip {
+      background: rgba(248, 250, 252, 0.9);
+      color: #111827;
+    }
+
+    body.light-theme .name-block p {
+      color: #374151;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 14px 14px 12px;
+      }
+
+      .name-block h1 {
+        font-size: 1.3rem;
+      }
+
+      .status-pill {
+        font-size: 0.65rem;
+      }
+    }
+  
