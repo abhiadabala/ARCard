@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Marker-based AR Business Card - Abhi Ram</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Marker-based AR business card of Abhi Ram using A-Frame and MindAR."  />
+
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <body>
+  <div id="ar-container">
+    <a-scene
+      mindar-image="imageTargetSrc: card.mind;"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+      embedded
+    >
+      <a-assets>
+        <img id="card" src="card.png" alt="AR marker - business card" />
+        <a-asset-item id="avatarModel" src="avatar.glb"></a-asset-item>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 0" id="marker-target">
+        <a-plane
+          src="#card"
+          position="0 0 0"
+          height="0.552"
+          width="1"
+          rotation="0 0 0"
+        ></a-plane>
+
+        <a-entity id="ar-card" position="-0.22 0.06 0.06">
+          <a-entity
+            id="avatar-entity"
+            gltf-model="#avatarModel"
+            position="0 0 0"
+            scale="0.22 0.22 0.22"
+            animation__spin="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear"
+          ></a-entity>
+        </a-entity>
+      </a-entity>
+    </a-scene>
+  </div>
+
+  <div id="ar-status">
+    <span id="ar-status-dot"></span>
+    <span id="ar-status-text">Initializing AR...</span>
+  </div>
+
+
+  <button id="theme-toggle" type="button" >🌓</button>
+
+  <div id="ui-overlay">
+    <div class="card" id="glass-card">
+      <div class="card-content">
+        <!-- FRONT SIDE -->
+        <div class="card-side card-front">
+          <div class="card-header">
+            <div class="name-block">
+              <h1 id="name">Abhi Ram</h1>
+              <p id="title">Computer Science Student · AI/ML & Web Dev</p>
+            </div>
+          </div>
+
+          <div class="status-text" id="status-text">
+            ✔️ Available for freelance
+          </div>
+
+          <h3>Summary</h3>
+          <p style="font-size:0.80rem; line-height:1.4; opacity:0.9; margin-top:4px; text-align: justify;">
+            Passionate Computer Science student exploring AI/ML, modern web development,
+            and immersive AR experiences. Open to internships, freelance collaborations,
+            and innovative tech projects.
+          </p>
+
+          <div class="tag-row">
+            <div class="tag-pill">AR</div>
+            <div class="tag-pill">Web Apps</div>
+            <div class="tag-pill">Java</div>
+            <div class="tag-pill">Python</div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <h3>Profile</h3>
+          <ul class="profile-list">
+            <li><strong>Skills:</strong> Python, AI/ML, Web Development, AR</li>
+            <li><strong>Experience:</strong> Academic &amp; mini projects</li>
+            <li><strong>Highlights:</strong> AR business card, hackathons</li>
+          </ul>
+
+          <div class="section-divider"></div>
+
+          <h3>Quick Actions</h3>
+          <div class="buttons">
+            <button class="btn-chip btn-primary" onclick="saveContact()">
+              <span class="icon">💾</span> Save Contact
+            </button>
+            <button class="btn-chip" onclick="openLink('mailto:adabala5285@gmail.com')">
+              <span class="icon">✉️</span> Email
+            </button>
+            <button class="btn-chip" onclick="openLink('https://github.com/abhiadabala')">
+              <span class="icon">🐙</span> GitHub
+            </button>
+            <button class="btn-chip" onclick="openLink('https://www.linkedin.com/in/abhiram-adabala')">
+              <span class="icon">🔗</span> LinkedIn
+            </button>
+            <button class="btn-chip" onclick="openLink('https://wa.me/919640672613')">
+              <span class="icon">💬</span> WhatsApp
+            </button>
+            <button class="btn-chip" onclick="openLink('resume.pdf')">
+              <span class="icon">📄</span> Resume
+            </button>
+            <button class="btn-chip" onclick="openLink('https://maps.google.com/?q=16.5449,81.5212')">
+              <span class="icon">📍</span> Navigate
+            </button>
+          </div>
+
+          <div class="drag-hint">
+            <span><span class="icon">🖱️</span> Drag / swipe to rotate (360°)</span>
+            <button class="flip-btn" type="button">
+              <span class="icon">↻</span> Flip
+            </button>
+          </div>
+        </div>
+
+        <!-- BACK SIDE -->
+        <div class="card-side card-back">
+          <div class="card-header">
+            <div class="name-block">
+              <h1>About</h1>
+              <p>More about my work</p>
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <h3>Projects</h3>
+          <ul class="profile-list">
+            <li>
+              <strong>AR Card:</strong>
+              Marker-based AR business card with 3D avatar, HTML overlay and motion effects.
+            </li>
+            <li>
+              <strong>Web Apps:</strong>
+              Event manager dashboard, budget tracker, interactive UI experiments.
+            </li>
+            <li>
+              <strong>Python:</strong>
+              virtual mouse using handgestures through webCam.
+            </li>
+          </ul>
+
+          <div class="section-divider"></div>
+
+          <h3>Skills</h3>
+          <ul class="profile-list">
+            <li><strong>Languages:</strong> Python, C, Java, JavaScript</li>
+            <li><strong>AI/ML:</strong> Classification, basic NLP, data analysis</li>
+            <li><strong>Web:</strong> HTML5, CSS3, JS </li>
+            <li><strong>Tools:</strong> VS Code, Git/GitHub, Eclipes </li>
+          </ul>
+
+          <div class="section-divider"></div>
+
+          <h3>Experience</h3>
+          <ul class="profile-list">
+            <li>
+              <strong>Academic:</strong> B.Tech & M.Tech coursework, lab projects and technical mini-projects.
+            </li>
+            <li>
+              <strong>Projects:</strong> AR business card, event management dashboard, budget tracker, Quiz Game.
+            </li>
+          </ul>
+
+          <div class="drag-hint" style="margin-top:8px;">
+            <span></span>
+            <button class="flip-btn" type="button">
+              <span class="icon">↺</span> Flip to front
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="intro-audio" src="intro.mp3"></audio>
+  <script src="script.js"></script>
+</body>
+</html>
